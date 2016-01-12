@@ -27,9 +27,14 @@ t1.Column("age").Set(20)
 t1.Column("create_at").Set(time.Now())
 
 insert := NewInsertSQL(t1).Statment()
+assert.NotNil(t, insert)
 
 log.Println("insert format:", insert.SQLFormat())
 log.Println("insert params:", insert.SQLParams())
+
+//! output
+//! insert format: INSERT INTO `accounts` ( `mailbox`, `age`, `create_at` ) VALUES ( ?, ?, ? )
+//! insert params: [demo@demo.cn 20 2016-01-12 21:59:56.607552428 +0800 CST]
 
 ````
 
@@ -47,6 +52,10 @@ update := NewUpdateSQL(t2).Where(EQ(t.Column("id").Name(), 10)).Statment()
 log.Println("update format:", insert.SQLFormat())
 log.Println("update params:", insert.SQLParams())
 
+//! output
+//! update format: UPDATE `accounts` SET `mailbox` = ?, `age` = ? WHERE `id` = ?
+//! update params: [demo@demo.cn 30 10]
+
 ````
 
 - 删除语句(DELETE)
@@ -59,6 +68,10 @@ update := NewDeleteSQL(t3).Where(EQ(t.Column("id").Name(), 10)).Statment()
 
 log.Println("delete format:", insert.SQLFormat())
 log.Println("delete params:", insert.SQLParams())
+
+//! output
+//! delete format: DELETE FROM `accounts` WHERE `id` = ?
+//! delete params: [10]
 
 ````
 
@@ -79,4 +92,10 @@ query.Where(EQ(t4.Column("id").Name(), 10))
 log.Println("query format:", query.Statment().SQLFormat())
 log.Println("query params:", query.Statment().SQLParams())
 
+//! output
+//! query format: SELECT a.name, a.mailbox, a.age, a.id , c.title, c.content, c.account_id FROM `accounts` AS a LEFT JOIN `account_comments` AS c ON a.id = c.account_id WHERE a.id = ?
+//! delete params: [10]
+
 ````
+
+### TODO

@@ -21,56 +21,56 @@ func TestTable(t *testing.T) {
 }
 
 func TestInsertSQL(t *testing.T) {
-	t1 := TABLE("account")
+	//! insert sql
+	t1 := TABLE("accounts")
 
-	t1.Column("mailbox").Set("ljp@sina.com")
-	t1.Column("age").Set(30)
+	t1.Column("mailbox").Set("demo@demo.cn")
+	t1.Column("age").Set(20)
 	t1.Column("create_at").Set(time.Now())
 
-	insert := NewInsertSQL(t1)
-	log.Println(insert.Statment())
-	assert.Equal(t, "INSERT INTO `account` ( `mailbox`, `age`, `create_at` ) VALUES ( ?, ?, ? )", insert.Statment().SQLFormat())
+	insert := NewInsertSQL(t1).Statment()
+	assert.NotNil(t, insert)
+
+	log.Println("insert format:", insert.SQLFormat())
+	log.Println("insert params:", insert.SQLParams())
 }
 
 func TestUpdateSQL(t *testing.T) {
-	t1 := TABLE("account")
+	//! update sql
+	t2 := TABLE("accounts")
 
-	t1.Column("mailbox").Set("ljp@sina.com")
-	t1.Column("age").Set(30)
-	t1.Column("create_at").Set(time.Now())
+	t2.Column("mailbox").Set("demo@demo.cn")
+	t2.Column("age").Set(30)
 
-	update := NewUpdateSQL(t1)
-	log.Println(update.Statment())
-	assert.Equal(t, "UPDATE `account` SET `mailbox` = ?, `age` = ?, `create_at` = ?", update.Statment().SQLFormat())
+	update := NewUpdateSQL(t2).Where(EQ(t2.Column("id").Name(), 10)).Statment()
+	assert.NotNil(t, update)
+
+	log.Println("update format:", update.SQLFormat())
+	log.Println("update params:", update.SQLParams())
 }
 
 func TestDeleteSQL(t *testing.T) {
-	t1 := TABLE("account")
-	del := NewDeleteSQL(t1)
-	del.Where(EQ(t1.Column("id").Name(), 10))
-	log.Println(del.Statment())
-	assert.Equal(t, "DELETE FROM `account` WHERE `id` = ?", del.Statment().SQLFormat())
+	//! delete sql
+	t3 := TABLE("accounts")
+
+	del := NewDeleteSQL(t3).Where(EQ(t3.Column("id").Name(), 10)).Statment()
+
+	log.Println("delete format:", del.SQLFormat())
+	log.Println("delete params:", del.SQLParams())
 }
 
 func TestQuerySQL(t *testing.T) {
-	t1 := TABLE("accounts").AS("a")
-	t1.Columns("name", "mailbox", "age")
-	t1.Column("name").AS("account_name")
+	//! query sql
+	t4 := TABLE("accounts").AS("a")
+	t4.Columns("name", "mailbox", "age")
 
-	query := NewQuerySQL(t1)
+	t5 := TABLE("account_comments").AS("c")
+	t5.Columns("title", "content")
 
-	t2 := TABLE("account_posts").AS("p")
-	t2.Columns("title", "create_at")
-
-	query.Join(LEFT(t2, EQ(t1.Column("id").Name(), t2.Column("account_id").Name())))
-
-	log.Println(query.Statment())
-
+	query := NewQuerySQL(t4).Join(LEFT(t5, EQ(t4.Column("id").Name(), t5.Column("account_id").Name())))
+	query.Where(EQ(t4.Column("id").Name(), 10))
 	assert.NotNil(t, query)
 
-	t3 := query.Table("account_posts")
-	assert.NotNil(t, t3)
-
-	log.Println(t3.SQL())
-	log.Println(t3.ColumnsSQL())
+	log.Println("query format:", query.Statment().SQLFormat())
+	log.Println("query params:", query.Statment().SQLParams())
 }
