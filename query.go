@@ -9,8 +9,8 @@ type QuerySQL struct {
 	order_asc     bool
 	order_columns []*Column
 	group_columns []*Column
-	offset        int
-	limit         int
+	offset        int64
+	limit         int64
 }
 
 func NewQuerySQL(table *Table) *QuerySQL {
@@ -112,7 +112,7 @@ func (query *QuerySQL) OrderByDesc(columns ...*Column) *QuerySQL {
 	return query
 }
 
-func (query *QuerySQL) Limit(page_no, page_size int) *QuerySQL {
+func (query *QuerySQL) Limit(page_no, page_size int64) *QuerySQL {
 	query.limit = page_size
 	query.offset = page_no * page_size
 	return query
