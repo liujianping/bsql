@@ -26,7 +26,7 @@ func (col *Column) Name() string {
 	return SQLQuote(col.name)
 }
 
-func (col *Column) AS(as string) *Column {
+func (col *Column) As(as string) *Column {
 	col.alias = as
 	return col
 }
@@ -74,7 +74,7 @@ func (t *Table) PrimaryKey(pk string) *Table {
 	return t
 }
 
-func (t *Table) AS(as string) *Table {
+func (t *Table) As(as string) *Table {
 	t.alias = as
 	return t
 }

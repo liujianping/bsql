@@ -9,12 +9,12 @@ import (
 )
 
 func TestTable(t *testing.T) {
-	t1 := TABLE("test").AS("t1")
+	t1 := TABLE("test").As("t1")
 
 	assert.Equal(t, t1.Name(), "`test`")
 	assert.Equal(t, t1.SQL(), "`test` AS t1")
 
-	col := t1.Column("name").AS("test_name")
+	col := t1.Column("name").As("test_name")
 
 	assert.Equal(t, col.Name(), "t1.name")
 	assert.Equal(t, col.SQL(), "t1.name AS test_name")
@@ -61,13 +61,16 @@ func TestDeleteSQL(t *testing.T) {
 
 func TestQuerySQL(t *testing.T) {
 	//! query sql
-	t4 := TABLE("accounts").AS("a")
+	t4 := TABLE("accounts").As("a")
 	t4.Columns("name", "mailbox", "age")
 
-	t5 := TABLE("account_comments").AS("c")
+	t5 := TABLE("account_comments").As("c")
 	t5.Columns("title", "content")
 
-	query := NewQuerySQL(t4).Join(LEFT(t5, EQ(t4.Column("id").Name(), t5.Column("account_id").Name())))
+	query := NewQuerySQL(t4)
+	//left join
+	query.LeftJoin(t5).On("a.id = c.account_id")
+
 	query.Where(EQ(t4.Column("id").Name(), 10))
 	assert.NotNil(t, query)
 

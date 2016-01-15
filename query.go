@@ -42,6 +42,24 @@ func (query *QuerySQL) Table(name string) *Table {
 	return nil
 }
 
+func (query *QuerySQL) LeftJoin(table *Table) *JoinTable {
+	join := LEFT(table)
+	query.joins = append(query.joins, join)
+	return join
+}
+
+func (query *QuerySQL) RightJoin(table *Table) *JoinTable {
+	join := RIGHT(table)
+	query.joins = append(query.joins, join)
+	return join
+}
+
+func (query *QuerySQL) InnerJoin(table *Table) *JoinTable {
+	join := INNER(table)
+	query.joins = append(query.joins, join)
+	return join
+}
+
 func (query *QuerySQL) Join(join *JoinTable) *QuerySQL {
 	query.joins = append(query.joins, join)
 	return query
@@ -50,42 +68,43 @@ func (query *QuerySQL) Join(join *JoinTable) *QuerySQL {
 type JoinTable struct {
 	symbol string
 	table  *Table
-	on     Expression
+	on     string
+}
+
+func (join *JoinTable) On(exp string) {
+	join.on = exp
 }
 
 func (join *JoinTable) SQL() string {
-	if on, err := join.on.SQL(); err == nil {
-		fmts := []string{}
-		fmts = append(fmts, join.symbol)
-		fmts = append(fmts, join.table.SQL())
-		fmts = append(fmts, "ON")
-		fmts = append(fmts, on)
-		return strings.Join(fmts, " ")
-	}
-	return ""
+	fmts := []string{}
+	fmts = append(fmts, join.symbol)
+	fmts = append(fmts, join.table.SQL())
+	fmts = append(fmts, "ON")
+	fmts = append(fmts, join.on)
+	return strings.Join(fmts, " ")
 }
 
-func LEFT(t *Table, exp Expression) *JoinTable {
+func LEFT(t *Table) *JoinTable {
 	return &JoinTable{
 		symbol: "LEFT JOIN",
 		table:  t,
-		on:     exp,
+		on:     "",
 	}
 }
 
-func RIGHT(t *Table, exp Expression) *JoinTable {
+func RIGHT(t *Table) *JoinTable {
 	return &JoinTable{
 		symbol: "RIGHT JOIN",
 		table:  t,
-		on:     exp,
+		on:     "",
 	}
 }
 
-func INNER(t *Table, exp Expression) *JoinTable {
+func INNER(t *Table) *JoinTable {
 	return &JoinTable{
 		symbol: "INNER JOIN",
 		table:  t,
-		on:     exp,
+		on:     "",
 	}
 }
 
@@ -193,11 +212,7 @@ func (query *QuerySQL) CountStatment() *Statment {
 	vals := []interface{}{}
 
 	fmts = append(fmts, "SELECT")
-	if query.table.primary != "" {
-		fmts = append(fmts, "COUNT("+query.table.primary+")")
-	} else {
-		fmts = append(fmts, "COUNT(*)")
-	}
+	fmts = append(fmts, "COUNT(*)")
 	fmts = append(fmts, "FROM")
 	fmts = append(fmts, query.table.SQL())
 
@@ -205,9 +220,7 @@ func (query *QuerySQL) CountStatment() *Statment {
 		fmts = append(fmts, join.symbol)
 		fmts = append(fmts, join.table.SQL())
 		fmts = append(fmts, "ON")
-		stmt := join.on.statment()
-		fmts = append(fmts, stmt.SQLFormat())
-		vals = append(vals, stmt.SQLParams()...)
+		fmts = append(fmts, join.on)
 	}
 
 	if len(query.conditions) > 0 {
