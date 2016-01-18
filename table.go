@@ -55,7 +55,7 @@ type Table struct {
 
 func TABLE(name string) *Table {
 	return &Table{
-		name:    strings.ToLower(name),
+		name:    name,
 		primary: "",
 		columns: make(map[string]*Column),
 	}
