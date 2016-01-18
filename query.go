@@ -30,12 +30,12 @@ func (query *QuerySQL) Table(name string) *Table {
 		return query.table
 	}
 
-	if query.table.Name() == SQLQuote(strings.ToLower(name)) {
+	if query.table.Name() == SQLQuote(name) {
 		return query.table
 	}
 
 	for _, join := range query.joins {
-		if join.table.Name() == SQLQuote(strings.ToLower(name)) {
+		if join.table.Name() == SQLQuote(name) {
 			return join.table
 		}
 	}

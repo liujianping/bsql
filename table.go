@@ -15,7 +15,7 @@ type Column struct {
 func COLUMN(tb *Table, name string) *Column {
 	return &Column{
 		table: tb,
-		name:  strings.ToLower(name),
+		name:  name,
 	}
 }
 
