@@ -30,7 +30,7 @@ func (query *QuerySQL) Table(name string) *Table {
 		return query.table
 	}
 
-	if query.table.Name() == SQLQuote(name) {
+	if strings.ToLower(query.table.Name()) == strings.ToLower(SQLQuote(name)) {
 		return query.table
 	}
 
