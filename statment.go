@@ -28,7 +28,9 @@ func (statment *Statment) Join(join *Statment, sep string) *Statment {
 }
 
 func SQLQuote(name string) string {
-	return "`" + name + "`"
+	n := strings.Trim(strings.Trim(name, " "), "`")
+	n = strings.Replace(n, ".", "`.`", -1)
+	return "`" + n + "`"
 }
 
 func Join(statments []*Statment, sep string) *Statment {

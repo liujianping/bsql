@@ -22,7 +22,7 @@ func (exp Expression) SQL() (string, error) {
 	case "AND", "OR", "LIKE", "IN":
 		return "", fmt.Errorf("expression (%s) unsupport SQL out", exp.symbol)
 	}
-	return fmt.Sprintf("%s %s %s", exp.field, exp.symbol, val), nil
+	return fmt.Sprintf("%s %s %s", SQLQuote(exp.field), exp.symbol, val), nil
 }
 
 func BinaryExpression(field, symbol string, value interface{}) Expression {
@@ -71,14 +71,14 @@ func (exp Expression) statment() *Statment {
 		return Join(statments, " OR ")
 	case "LIKE":
 		return &Statment{
-			format: fmt.Sprintf("%s LIKE ?", exp.field),
+			format: fmt.Sprintf("%s LIKE ?", SQLQuote(exp.field)),
 			values: []interface{}{exp.value},
 		}
 	case "IN":
 		return nil
 	default:
 		return &Statment{
-			format: fmt.Sprintf("%s %s ?", exp.field, exp.symbol),
+			format: fmt.Sprintf("%s %s ?", SQLQuote(exp.field), exp.symbol),
 			values: []interface{}{exp.value},
 		}
 	}
