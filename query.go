@@ -131,9 +131,19 @@ func (query *QuerySQL) OrderByDesc(columns ...*Column) *QuerySQL {
 	return query
 }
 
-func (query *QuerySQL) Limit(page_no, page_size int64) *QuerySQL {
+func (query *QuerySQL) Page(page_no, page_size int64) *QuerySQL {
 	query.limit = page_size
 	query.offset = page_no * page_size
+	return query
+}
+
+func (query *QuerySQL) Limit(limit int64) *QuerySQL {
+	query.limit = limit
+	return query
+}
+
+func (query *QuerySQL) Offset(offset int64) *QuerySQL {
+	query.offset = offset
 	return query
 }
 
