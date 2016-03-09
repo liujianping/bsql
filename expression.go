@@ -60,7 +60,7 @@ func (exp Expression) statment() *Statment {
 				statments = append(statments, inside.statment())
 			}
 		}
-		return Join(statments, " AND ")
+		return Brace(Join(statments, ") AND ("))
 	case "OR":
 		var statments []*Statment
 		for _, inside := range exp.insides {
@@ -68,7 +68,7 @@ func (exp Expression) statment() *Statment {
 				statments = append(statments, inside.statment())
 			}
 		}
-		return Join(statments, " OR ")
+		return Brace(Join(statments, ") OR ("))
 	case "LIKE":
 		return &Statment{
 			format: fmt.Sprintf("%s LIKE ?", SQLQuote(exp.field)),

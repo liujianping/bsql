@@ -54,3 +54,10 @@ func Join(statments []*Statment, sep string) *Statment {
 		values: vals,
 	}
 }
+
+func Brace(statment *Statment) *Statment {
+	return &Statment{
+		format: "(" + statment.format + ")",
+		values: statment.values,
+	}
+}

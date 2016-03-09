@@ -242,6 +242,16 @@ func (query *QuerySQL) CountStatment() *Statment {
 		}
 	}
 
+	if len(query.group_columns) > 0 {
+		fmts = append(fmts, "GROUP BY")
+
+		fields := []string{}
+		for _, col := range query.group_columns {
+			fields = append(fields, col.Name())
+		}
+		fmts = append(fmts, strings.Join(fields, ", "))
+	}
+
 	return &Statment{
 		format: strings.Join(fmts, " "),
 		values: vals,
