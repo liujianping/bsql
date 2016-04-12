@@ -6,10 +6,11 @@ import (
 )
 
 type Column struct {
-	table *Table
-	name  string
-	alias string
-	value interface{}
+	table  *Table
+	name   string
+	alias  string
+	value  interface{}
+	byDesc bool
 }
 
 func COLUMN(tb *Table, name string) *Column {
@@ -37,6 +38,21 @@ func (col *Column) Set(val interface{}) {
 
 func (col *Column) Get() interface{} {
 	return col.value
+}
+
+func (col *Column) ByAsc() {
+	col.byDesc = false
+}
+
+func (col *Column) ByDesc() {
+	col.byDesc = true
+}
+
+func (col *Column) Order() string {
+	if col.byDesc == true {
+		return fmt.Sprintf("%s DESC", col.Name())
+	}
+	return fmt.Sprintf("%s ASC", col.Name())
 }
 
 func (col *Column) SQL() string {

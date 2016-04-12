@@ -72,6 +72,8 @@ func TestQuerySQL(t *testing.T) {
 	query.LeftJoin(t5).On("a.id = c.account_id")
 
 	query.Where(EQ(t4.Column("id").Name(), 10))
+	query.OrderByAsc(t4.Column("age"))
+	query.OrderByDesc(t5.Column("id"))
 	assert.NotNil(t, query)
 
 	log.Println("query format:", query.Statment().SQLFormat())

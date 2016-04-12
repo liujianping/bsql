@@ -6,7 +6,6 @@ type QuerySQL struct {
 	table         *Table
 	joins         []*JoinTable
 	conditions    []Expression
-	order_asc     bool
 	order_columns []*Column
 	group_columns []*Column
 	offset        int64
@@ -18,7 +17,6 @@ func NewQuerySQL(table *Table) *QuerySQL {
 		table:         table,
 		joins:         []*JoinTable{},
 		conditions:    []Expression{},
-		order_asc:     false,
 		order_columns: []*Column{},
 		group_columns: []*Column{},
 	}
@@ -114,20 +112,18 @@ func (query *QuerySQL) Where(exps ...Expression) *QuerySQL {
 }
 
 func (query *QuerySQL) OrderByAsc(columns ...*Column) *QuerySQL {
-	if query.order_asc != true {
-		query.order_asc = true
-		query.order_columns = []*Column{}
+	for _, col := range columns {
+		col.ByAsc()
+		query.order_columns = append(query.order_columns, col)
 	}
-	query.order_columns = append(query.order_columns, columns...)
 	return query
 }
 
 func (query *QuerySQL) OrderByDesc(columns ...*Column) *QuerySQL {
-	if query.order_asc != false {
-		query.order_asc = false
-		query.order_columns = []*Column{}
+	for _, col := range columns {
+		col.ByDesc()
+		query.order_columns = append(query.order_columns, col)
 	}
-	query.order_columns = append(query.order_columns, columns...)
 	return query
 }
 
@@ -193,17 +189,11 @@ func (query *QuerySQL) Statment() *Statment {
 	if len(query.order_columns) > 0 {
 		fmts = append(fmts, "ORDER BY")
 
-		fields := []string{}
+		orders := []string{}
 		for _, col := range query.order_columns {
-			fields = append(fields, col.Name())
+			orders = append(orders, col.Order())
 		}
-		fmts = append(fmts, strings.Join(fields, ", "))
-
-		if query.order_asc {
-			fmts = append(fmts, "ASC")
-		} else {
-			fmts = append(fmts, "DESC")
-		}
+		fmts = append(fmts, strings.Join(orders, ", "))
 	}
 
 	if query.limit > 0 {
