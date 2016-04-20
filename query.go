@@ -153,11 +153,17 @@ func (query *QuerySQL) Statment() *Statment {
 	vals := []interface{}{}
 
 	fmts = append(fmts, "SELECT")
-	fmts = append(fmts, query.table.ColumnsSQL())
+	if query.table.ColumnsSQL() != "" {
+		fmts = append(fmts, query.table.ColumnsSQL())
+	} else {
+		fmts = append(fmts, "*")
+	}
 
 	for _, join := range query.joins {
-		fmts = append(fmts, ",")
-		fmts = append(fmts, join.table.ColumnsSQL())
+		if join.table.ColumnsSQL() != "" {
+			fmts = append(fmts, ",")
+			fmts = append(fmts, join.table.ColumnsSQL())
+		}
 	}
 
 	fmts = append(fmts, "FROM")

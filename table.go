@@ -110,7 +110,7 @@ func (t *Table) ColumnsSQL() string {
 		}
 		return strings.Join(columns, ", ")
 	}
-	return "*"
+	return ""
 }
 
 func (t *Table) Columns(columns ...string) *Table {
